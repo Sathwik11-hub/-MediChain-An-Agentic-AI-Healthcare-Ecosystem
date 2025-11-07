@@ -60,6 +60,10 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     top_k_results: int = 5
     similarity_threshold: float = 0.7
+
+    # Groq (optional) - set GROQ_API_KEY and GROQ_MODEL in .env to use Groq as LLM provider
+    groq_api_key: str = ""
+    groq_model: str = ""
     
     class Config:
         env_file = ".env"

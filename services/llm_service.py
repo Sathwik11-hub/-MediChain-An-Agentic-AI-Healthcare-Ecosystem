@@ -8,6 +8,7 @@ import openai
 from anthropic import Anthropic
 
 from config.settings import settings
+import httpx
 
 
 class LLMService:
@@ -26,6 +27,14 @@ class LLMService:
             self.client = openai
         elif self.provider == "anthropic":
             self.client = Anthropic(api_key=settings.anthropic_api_key)
+        elif self.provider == "groq":
+            # Groq does not have an official client in this project; use HTTP calls via httpx.
+            self.groq_api_key = settings.groq_api_key
+            self.groq_model = settings.groq_model
+            if not self.groq_api_key:
+                raise ValueError("GROQ API key not configured. Set GROQ_API_KEY in your environment.")
+            # httpx client for reuse
+            self._http_client = httpx.Client(timeout=30.0)
         else:
             raise ValueError(f"Unsupported LLM provider: {self.provider}")
         
@@ -67,6 +76,10 @@ class LLMService:
             elif self.provider == "anthropic":
                 return self._generate_anthropic(
                     prompt, temperature, max_tokens, system_prompt
+                )
+            elif self.provider == "groq":
+                return self._generate_groq(
+                    prompt, temperature, max_tokens, system_prompt, json_mode
                 )
         except Exception as e:
             logger.error(f"Error generating response: {e}")
@@ -211,3 +224,63 @@ def get_llm_service() -> LLMService:
     if _llm_service is None:
         _llm_service = LLMService()
     return _llm_service
+
+
+    def _generate_groq(
+        self,
+        prompt: str,
+        temperature: float,
+        max_tokens: int,
+        system_prompt: Optional[str],
+        json_mode: bool
+    ) -> str:
+        """Generate response using Groq HTTP API (simple wrapper)."""
+        # Best-effort implementation using Groq's REST API pattern. Adjust payload as needed
+        # if Groq changes their API surface. This will POST to the model outputs endpoint
+        # and attempt to extract text from the response.
+        api_base = "https://api.groq.ai/v1/models"
+        model = self.groq_model or "groq-1"
+        url = f"{api_base}/{model}/outputs"
+
+        headers = {
+            "Authorization": f"Bearer {self.groq_api_key}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "input": prompt,
+            "temperature": temperature,
+            "max_output_tokens": max_tokens
+        }
+
+        # include system prompt in the payload if provided
+        if system_prompt:
+            payload["system"] = system_prompt
+
+        try:
+            resp = self._http_client.post(url, json=payload, headers=headers)
+            resp.raise_for_status()
+            data = resp.json()
+
+            # Try to extract text from common response shapes
+            # Groq responses may vary; try several fallbacks
+            if isinstance(data, dict):
+                # Example: {'outputs': [{'content': '...'}]}
+                outputs = data.get("outputs") or data.get("choices")
+                if outputs and isinstance(outputs, list) and len(outputs) > 0:
+                    first = outputs[0]
+                    if isinstance(first, dict):
+                        text = first.get("content") or first.get("text") or first.get("output")
+                        if text:
+                            return text if isinstance(text, str) else str(text)
+
+                # Fallback: try a top-level 'text'
+                if "text" in data:
+                    return data["text"]
+
+            # As a last resort, return the raw JSON
+            return str(data)
+
+        except Exception as e:
+            logger.error(f"Groq request failed: {e}")
+            raise
