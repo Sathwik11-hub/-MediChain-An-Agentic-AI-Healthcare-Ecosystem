@@ -1,0 +1,48 @@
+services:
+  # Backend API Service
+  - type: web
+    name: medichain-api
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements-full.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USER
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+
+  # Frontend Service (Streamlit)
+  - type: web
+    name: medichain-frontend
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements-vercel.txt
+    startCommand: streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: BACKEND_API_URL
+        value: https://medichain-api.onrender.com
+      - key: OPENAI_API_KEY
+        sync: false
+
+# Database (if needed)
+databases:
+  - name: medichain-postgres
+    plan: starter
+    databaseName: medichain
+    user: medichain_user

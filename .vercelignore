@@ -1,0 +1,189 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Build artifacts
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments (CRITICAL - these are huge!)
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+env.bak/
+venv.bak/
+python-env/
+
+# ML Model files (use external storage for these)
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.ckpt
+*.pb
+*.onnx
+*.tflite
+*.model
+models/
+checkpoints/
+saved_models/
+weights/
+
+# Data files (use external storage/CDN)
+*.csv
+*.tsv
+*.json
+*.parquet
+*.feather
+data/
+datasets/
+*.db
+*.sqlite
+*.sqlite3
+database.db
+
+# Logs and temporary files
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Testing
+.pytest_cache/
+.tox/
+.hypothesis/
+.coverage
+htmlcov/
+.nox/
+coverage.xml
+*.cover
+.cache
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+
+# Documentation (not needed in production)
+docs/
+*.md
+!README.md
+*.rst
+*.txt
+!requirements.txt
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker (not needed on Vercel)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Jupyter Notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Node.js (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Kubernetes deployment files
+deployment/
+k8s/
+
+# Large binary files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.bin
+*.exe
+*.dll
+*.dylib
+*.pdf
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Test data
+test_data/
+tests/fixtures/
+tests/data/
+
+# Cache directories
+.cache/
+.sass-cache/
+*.cache
